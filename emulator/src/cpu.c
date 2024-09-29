@@ -259,9 +259,6 @@ void execute(u8 opcode){
         else if (signed_value_a < signed_value_b){
           set_flag(STATUS_FLAG_L);
           set_flag(STATUS_FLAG_C);
-        } else {
-          clear_flag(STATUS_FLAG_C);
-          clear_flag(STATUS_FLAG_L);
         }
 
         // Check for signed overflow
@@ -274,6 +271,160 @@ void execute(u8 opcode){
       }
       break;
     }
+    /*
+     *  
+     *  Leave some space for the branch instructions that will be added later on
+     *
+    */
+  case OPCODE_ADD_SIGNED_REG_IMM: {
+    u8 reg = fetch();
+    u8 val_low = fetch();
+    u8 val_high = fetch();
+
+    u16 value = (val_high << 8) | val_low;
+
+    if (reg < 8) {
+        // Read the values in the registers
+        u16 value_a = cpu->r[reg]; 
+        u16 value_b = value;
+
+        // Now treat them as signed!
+        i16 signed_value_a = (i16)value_a;
+        i16 signed_value_b = (i16)value_b;
+
+        i16 result = signed_value_a + signed_value_b;
+
+        // Clear all relevant flags before setting them
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_V);
+        clear_flag(STATUS_FLAG_N);
+
+        // 1. Check for overflow (signed overflow detection)
+        // Overflow occurs when the sign of the result differs from the expected sign
+        if (((signed_value_a > 0) && (signed_value_b > 0) && (result < 0)) || 
+            ((signed_value_a < 0) && (signed_value_b < 0) && (result > 0))) {
+            set_flag(STATUS_FLAG_V); // Set overflow flag if there's a signed overflow
+        }
+
+        // 2. Check for zero result
+        if (result == 0) {
+            set_flag(STATUS_FLAG_Z); // Set zero flag if the result is zero
+        }
+
+        // 3. Check for negative result (if the result is negative in signed 16-bit context)
+        if (result < 0) {
+            set_flag(STATUS_FLAG_N); // Set negative flag if result is negative
+        }
+
+        // NOTE: We're not handling carry or less-than flag (L flag) here, 
+        // since we're doing signed arithmetic, and these flags are for unsigned cases.
+
+        // Store the result back into the register
+        cpu->r[reg] = (u16)result;
+      } else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_SUB_SIGNED_REG_IMM:{
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
+
+      u16 value = (val_high << 8) | val_low;
+
+      if (reg < 8){
+        i16 signed_value_a = (i16)cpu->r[reg];
+        i16 signed_value_b = (i16)value;
+
+        i16 result = signed_value_a - signed_value_b;
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_V);
+        clear_flag(STATUS_FLAG_N);
+
+        // Check for signed overflow
+        if (((signed_value_a > 0) && (signed_value_b < 0) && (result < 0)) ||
+            ((signed_value_a < 0) && (signed_value_b > 0) && (result > 0))) {
+          set_flag(STATUS_FLAG_V);
+        }
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+
+        if (result < 0){
+          set_flag(STATUS_FLAG_N);
+        }
+
+        cpu->r[reg] = (u16)result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_ADD_UNSIGNED_REG_IMM:{
+      u8 reg= fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
+
+      u16 value = (val_high << 8) | val_low;
+
+      if (reg < 8){
+        
+        u16 value_a = cpu->r[reg];
+        u16 result = value_a + value;
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_C);
+
+        // Check for carry (unsigned overflow)
+        if (result < value_a){
+          set_flag(STATUS_FLAG_C);
+        }
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+
+        cpu->r[reg] = result;
+      } else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_SUB_UNSIGNED_REG_IMM:{
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
+
+      u16 value = (val_high << 8) | val_low;
+
+      if (reg < 8){
+        u16 value_a = cpu->r[reg];
+        u16 result = value_a + value;
+
+        clear_flag(STATUS_FLAG_C);
+        clear_flag(STATUS_FLAG_Z);
+
+        // Check for borrow (carry flag)
+        if (value_a < value){
+          set_flag(STATUS_FLAG_C);
+        }
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+
+    }
 
 
     default:
@@ -283,10 +434,10 @@ void execute(u8 opcode){
 }
 
 void run(){
-  while (cpu->pc < 0x000B){
+  while (cpu->pc < 0x000C){
     log_output(LOG_LEVEL_INFO, "Fetching instruction...");
     u8 opcode = fetch();
-    log_output(LOG_LEVEL_INFO, "Now executing opcode: 0x%08x", opcode);
+    log_output(LOG_LEVEL_INFO, "Now executing opcode: 0x%02x", opcode);
     execute(opcode);
     log_output(LOG_LEVEL_INFO, "Current Program counter: 0x%04x", cpu->pc);
 
