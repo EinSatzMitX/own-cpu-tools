@@ -29,8 +29,26 @@
 #define OPCODE_BRANCH_ALWAYS 0x38 // Simply branches
 
 /* 0x40 Opcodes: Arithmetical instructions */
-#define OPCODE_ADD_REG_IMM 0x40 // Adds an immediate value to a specified register
-#define OPCODE_SUB_REG_IMM 0x41 
+#define OPCODE_ADD_SIGNED_REG_IMM 0x40 // Adds a signed immediate value to a specified register
+#define OPCODE_SUB_SIGNED_REG_IMM 0x41 // Subtracts a signed immediate value from a specified register 
+#define OPCODE_ADD_SIGNED_REG_MEM 0x42 // Adds a signed value from a specified memory address to a register
+#define OPCODE_SUB_SIGNED_REG_MEM 0x43 // Subtracts a signed value from a specified memory address from a register
+#define OPCODE_ADD_SIGNED_REG_REG 0x44 // Adds a signed value from one register to another
+#define OPCODE_SUB_SIGNED_REG_REG 0x45 // Subtracts a signed value from one register from another
+
+/* Unsigned Variants */
+#define OPCODE_ADD_UNSIGNED_REG_IMM 0x46 // Adds an unsigned immediate value to a specified register
+#define OPCODE_SUB_UNSIGNED_REG_IMM 0x47 // Subtracts an unsigned immediate value from a specified register 
+#define OPCODE_ADD_UNSIGNED_REG_MEM 0x48 // Adds an unsigned value from a specified memory address to a register
+#define OPCODE_SUB_UNSIGNED_REG_MEM 0x49 // Subtracts an unsigned value from a specified memory address from a register
+#define OPCODE_ADD_UNSIGNED_REG_REG 0x4A // Adds an unsigned value from one register to another
+#define OPCODE_SUB_UNSIGNED_REG_REG 0x4B // Subtracts an unsigned value from one register from another
+
+/* 0xF0 Opcodes: Special instructions */
+#define OPCODE_HALT 0xFE
+#define OPCODE_NOOP 0xFF
+
+
 
 
 /* Register defines */

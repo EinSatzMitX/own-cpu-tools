@@ -18,14 +18,11 @@ void init(){
   cpu->memory[0x0006] = 0xFF;
   cpu->memory[0x0007] = 0xFF;
 
-  cpu->memory[0x0008] = OPCODE_CMP_REG_IMM;
+
+  cpu->memory[0x0008] = OPCODE_ADD_SIGNED_REG_IMM;
   cpu->memory[0x0009] = REG0;
-  cpu->memory[0x000A] = 0x01;
-  cpu->memory[0x000B] = 0xF0;
-
-
-  cpu->memory[0x01F0] = 0x4A;
-  cpu->memory[0x01F1] = 0x5B;
+  cpu->memory[0x000A] = 0x3B;
+  cpu->memory[0x000B] = 0x4D;
   
 
 }
