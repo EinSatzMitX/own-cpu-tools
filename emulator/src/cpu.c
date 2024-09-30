@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "cpu.h"
 #include "logging.h"
@@ -10,7 +12,8 @@ CPU *cpu = NULL;
 
 CPU* get_CPU(){
   if (cpu == NULL){
-    cpu = (CPU*)malloc(sizeof(cpu));
+    cpu = (CPU*)malloc(sizeof(CPU));
+    log_output(LOG_LEVEL_DEBUG, "cpu memory allocated!");
     memset(cpu->r, 0, sizeof(cpu->r)); 
     cpu->sp = 0x0000;
     cpu->pc = 0x0000;
@@ -450,4 +453,58 @@ void set_flag(u8 flag){
 }
 void clear_flag(u8 flag){
   cpu->status_flags &= ~flag;
+}
+
+void load_program(u8* program, size_t program_size, u16 start_addr){
+  if (program_size > 64*1024){
+    log_output(LOG_LEVEL_ERROR, "Bro stop uploading your porn collection");
+    return;
+  }
+
+  for (size_t i = start_addr; i < program_size; i++){
+    cpu->memory[i] = program[i];
+  }
+
+  log_output(LOG_LEVEL_INFO, "Program loaded into memory succesfully!");
+
+}
+
+void load_program_from_file(const char* filename, u16 start_addr){
+  FILE* file = fopen(filename, "rb");
+  if (!file){
+    log_output(LOG_LEVEL_ERROR, "Can not open file '%s'", filename);
+  }
+    
+  fseek(file, 0, SEEK_END);
+  long file_size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  log_output(LOG_LEVEL_DEBUG, "file size: %ld bytes", file_size);
+
+  if (file_size <= 0){
+    log_output(LOG_LEVEL_ERROR, "file size is invalid: %ld", file_size);
+    fclose(file);
+    return;
+  }
+
+
+  u8 *content = (u8*)malloc(file_size);
+  if (content == NULL){
+    log_output(LOG_LEVEL_ERROR, "memory allocation failed!");
+    fclose(file);
+    return;
+  }
+
+  size_t read_size = fread(content, 1, file_size, file);
+  if(read_size != (size_t)file_size){
+    log_output(LOG_LEVEL_ERROR, "Failed to read file content");
+    free(content);
+    fclose(file);
+    return;
+  }
+  fclose(file);
+
+  load_program(content, file_size, start_addr);
+
+  free(content);
 }

@@ -8,8 +8,10 @@ int main(int argc, char** argv){
   initialize_logging();
   log_output(LOG_LEVEL_INFO, "Logging initialized!");
 
-  log_output(LOG_LEVEL_TRACE, "executing init()...");
   init();
+
+  load_program_from_file("output.bin", 0x0000);
+
 
   run();
 

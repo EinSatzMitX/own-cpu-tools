@@ -7,6 +7,8 @@
 #define STATIC_ASSERT static_assert
 #endif
 
+
+
 // Platform detection
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) 
 #define RPLATFORM_WINDOWS 1
