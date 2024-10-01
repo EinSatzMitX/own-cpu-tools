@@ -4,6 +4,12 @@
 
 - very, very simple
 
+- currently when an instruction isn't being recognized, it will be 0xFF (NOOP)
+    - Note here the the following registers will still have their value being interpreted correctly, so this could fuck up your code dramatically 
+
+
+- Implemented Opcodes:
+
 
 Program Flow
 -

@@ -40,47 +40,45 @@ char* read_file(const char* name){
 }
 
 char* trim_file(const char* input){
-    if (input == NULL) {
-        return NULL;
-    }
+  int i = 0, j = 0;
+  int in_comment = 0;
+  char* result = (char*)malloc(sizeof(char*) * (strlen(input) + 1));
 
-    // Create a modifiable copy of the input
-    char* trimmed = strdup(input);  // Copy the input string
-    if (trimmed == NULL) {
-        return NULL;  // Memory allocation failed
-    }
+  if (result == NULL){
+    return NULL;
+  }
 
-    char *start = trimmed, *end, *dest = trimmed;
-
-    // Step 1: Trim leading whitespaces
-    while (*start && isspace((unsigned char)*start)) {
-        start++;
+  while (input[i] != '\0'){
+    if (in_comment){
+      // Skip characters until a newline is found
+      if (input[i] == '\n'){
+        result[j++] = ' ';
+        in_comment = 0;
+      }
+      i++;
     }
-
-    // Step 2: Process the string, keeping only single spaces between words
-    int in_space = 0;
-    while (*start) {
-        if (isspace((unsigned char)*start)) {
-            if (!in_space) { // Only allow one space
-                *dest++ = ' ';
-                in_space = 1;
-            }
-        } else {
-            *dest++ = *start;
-            in_space = 0;
-        }
-        start++;
+    else if (input[i] == ';'){
+      // ; indicates that a comment is started
+      in_comment = 1;
+      result[j++] = ' ';
+      i++;
     }
-    
-    // Step 3: Trim trailing whitespace by removing the last space if any
-    end = dest - 1;
-    if (end >= trimmed && *end == ' ') {
-        *end = '\0';  // Null-terminate after the last word
-    } else {
-        *dest = '\0'; // Null-terminate if no trailing space
+    else if (isspace(input[i])){
+      // Replace all whitespaces with a single charcter
+      if (j == 0 || result[j - 1] != ' '){
+        result[j++] = ' ';
+      }
+      i++;
     }
+    else {
+      // Everything else will just be copied from one string to another
+      result[j++] = input[i++];
+    }
+  }
 
-    return trimmed;
+  result[j] = '\0';
+  
+  return result;
 }
 
 

@@ -8,10 +8,15 @@
 
 int main(int argc, char** argv){
 
+  if (argc < 4){
+    printf("Please follow this syntax: ./c_asm <input.asm> -o <output.bin>\n");
+    return -1;
+  }
+
   
   char* contents = (char*)malloc(FILE_SIZE);
   printf("Starting to read file...\n");
-  contents = read_file("test.asm");
+  contents = read_file(argv[1]);
 
   char* trimmed = trim_file(contents);
 
@@ -24,7 +29,7 @@ int main(int argc, char** argv){
     printf("Token %d: Type = %d, value '%d', register '%d'\n", i, tokens[i].type, tokens[i].val, tokens[i].reg);
   }
 
-  write_tokens_to_file("output.bin", tokens, token_count);
+  write_tokens_to_file(argv[argc -1], tokens, token_count);
 
 
   return 0;

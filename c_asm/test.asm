@@ -1,1 +1,9 @@
-LRI R1, #5
+
+LDI R1, #7
+SWR R1, #100
+LDM R0, #100
+
+NOT R0
+
+HLT
+
