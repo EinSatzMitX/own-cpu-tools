@@ -10,7 +10,7 @@ int main(int argc, char** argv){
 
   init();
 
-  load_program_from_file("output.bin", 0x0000);
+  load_program_from_file(argv[1], 0x0000);
 
 
   run();

@@ -9,10 +9,10 @@ typedef enum {
 } TokenType; 
 
 typedef union {
-    uint16_t value;        // The full 16-bit immediate value
+    u16 value;        // The full 16-bit immediate value
     struct {
-        uint8_t low;       // Low byte
-        uint8_t high;      // High byte
+        u8 low;       // Low byte
+        u8 high;      // High byte
     };
 } Immediate;
 
@@ -81,6 +81,22 @@ void tokenize_string(const char* input, Token tokens[], int* token_count);
 #define OPCODE_SUB_UNSIGNED_REG_MEM 0x49 // Subtracts an unsigned value from a specified memory address from a register
 #define OPCODE_ADD_UNSIGNED_REG_REG 0x4A // Adds an unsigned value from one register to another
 #define OPCODE_SUB_UNSIGNED_REG_REG 0x4B // Subtracts an unsigned value from one register from another
+
+/* 0x50 Opcodes: Logical instructions */
+#define OPCODE_XOR_REG_IMM 0x50
+#define OPCODE_XOR_REG_MEM 0x51
+#define OPCODE_XOR_REG_REG 0x52
+
+#define OPCODE_AND_REG_IMM 0x53
+#define OPCODE_AND_REG_MEM 0x54
+#define OPCODE_AND_REG_REG 0x55
+
+#define OPCODE_NOT_REG 0x56
+
+#define OPCODE_OR_REG_IMM 0x57
+#define OPCODE_OR_REG_MEM 0x58
+#define OPCODE_OR_REG_REG 0x59
+
 
 /* 0xF0 Opcodes: Special instructions */
 #define OPCODE_HALT 0xFE

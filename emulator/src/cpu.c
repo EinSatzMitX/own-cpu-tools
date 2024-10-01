@@ -429,7 +429,295 @@ void execute(u8 opcode){
 
     }
 
+    /* Logical instructions */
+    case OPCODE_XOR_REG_IMM: {
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
 
+      if (reg < 8){
+        u16 value = (val_high << 8) | val_low;
+        u16 result = cpu->r[reg];
+
+        result = result ^ value;
+        
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_Z);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+
+      break;
+    }
+    case OPCODE_XOR_REG_MEM:{
+      u8 reg = fetch();
+      u8 addr_low = fetch();
+      u8 addr_high = fetch();
+
+      if (reg < 8){
+        u16 addr = (addr_high << 8) | addr_low;
+
+        u16 result = cpu->r[reg];
+        u16 value = cpu->memory[addr];
+
+        result = result ^ value; 
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+          
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result; 
+      }else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_XOR_REG_REG:{
+      u8 reg_a = fetch();
+      u8 reg_b = fetch();
+
+      if (reg_a < 8 && reg_b < 8){
+        u16 result = cpu->r[reg_a];
+        u16 value_b = cpu->r[reg_b];
+
+        result = result ^ value_b;
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg_a] = result;
+      }
+      else{
+        log_output(LOG_LEVEL_ERROR, "Invalid registers: r%d, r%d", reg_a, reg_b);
+      }
+      break;
+    }
+    case OPCODE_AND_REG_IMM: {
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
+
+      if (reg < 8){
+        u16 value = (val_high << 8) | val_low;
+        u16 result = cpu->r[reg];
+
+        result = result & value;
+        
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_Z);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+
+      break;
+    }
+    case OPCODE_AND_REG_MEM:{
+      u8 reg = fetch();
+      u8 addr_low = fetch();
+      u8 addr_high = fetch();
+
+      if (reg < 8){
+        u16 addr = (addr_high << 8) | addr_low;
+
+        u16 result = cpu->r[reg];
+        u16 value = cpu->memory[addr];
+
+        result = result & value; 
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+          
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result; 
+      }else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_AND_REG_REG:{
+      u8 reg_a = fetch();
+      u8 reg_b = fetch();
+
+      if (reg_a < 8 && reg_b < 8){
+        u16 result = cpu->r[reg_a];
+        u16 value_b = cpu->r[reg_b];
+
+        result = result & value_b;
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg_a] = result;
+      }
+      else{
+        log_output(LOG_LEVEL_ERROR, "Invalid registers: r%d, r%d", reg_a, reg_b);
+      }
+      break;
+    }
+    case OPCODE_NOT_REG: {
+      u8 reg = fetch();
+
+      if (reg < 8){
+        u16 result = cpu->r[reg];
+
+        result = ~result;
+        
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_Z);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+
+      break;
+    }
+    case OPCODE_OR_REG_IMM: {
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
+
+      if (reg < 8){
+        u16 value = (val_high << 8) | val_low;
+        u16 result = cpu->r[reg];
+
+        result = result | value;
+        
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_Z);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+
+      break;
+    }
+    case OPCODE_OR_REG_MEM:{
+      u8 reg = fetch();
+      u8 addr_low = fetch();
+      u8 addr_high = fetch();
+
+      if (reg < 8){
+        u16 addr = (addr_high << 8) | addr_low;
+
+        u16 result = cpu->r[reg];
+        u16 value = cpu->memory[addr];
+
+        result = result | value; 
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+          
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg] = result; 
+      }else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_OR_REG_REG:{
+      u8 reg_a = fetch();
+      u8 reg_b = fetch();
+
+      if (reg_a < 8 && reg_b < 8){
+        u16 result = cpu->r[reg_a];
+        u16 value_b = cpu->r[reg_b];
+
+        result = result | value_b;
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+        cpu->r[reg_a] = result;
+      }
+      else{
+        log_output(LOG_LEVEL_ERROR, "Invalid registers: r%d, r%d", reg_a, reg_b);
+      }
+      break;
+    }
+
+
+
+    case OPCODE_HALT:{
+      log_output(LOG_LEVEL_ERROR, "CPU will be halted (Opcode 0xFE)");
+      break;
+    }
     default:
       log_output(LOG_LEVEL_ERROR, "Unknown opcode: 0x%02x", opcode);
       break;
@@ -437,14 +725,16 @@ void execute(u8 opcode){
 }
 
 void run(){
-  while (cpu->pc < 0x000C){
+  while (cpu->memory[cpu->pc] != OPCODE_HALT/* peek into memory without increasing the program counter */){
     log_output(LOG_LEVEL_INFO, "Fetching instruction...");
     u8 opcode = fetch();
     log_output(LOG_LEVEL_INFO, "Now executing opcode: 0x%02x", opcode);
     execute(opcode);
     log_output(LOG_LEVEL_INFO, "Current Program counter: 0x%04x", cpu->pc);
 
-
+  }
+  if (cpu->memory[cpu->pc] == OPCODE_HALT){
+    log_output(LOG_LEVEL_INFO, "Halting CPU...");
   }
 }
 

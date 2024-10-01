@@ -44,6 +44,21 @@
 #define OPCODE_ADD_UNSIGNED_REG_REG 0x4A // Adds an unsigned value from one register to another
 #define OPCODE_SUB_UNSIGNED_REG_REG 0x4B // Subtracts an unsigned value from one register from another
 
+/* 0x50 Opcodes: Logical instructions */
+#define OPCODE_XOR_REG_IMM 0x50
+#define OPCODE_XOR_REG_MEM 0x51
+#define OPCODE_XOR_REG_REG 0x52
+
+#define OPCODE_AND_REG_IMM 0x53
+#define OPCODE_AND_REG_MEM 0x54
+#define OPCODE_AND_REG_REG 0x55
+
+#define OPCODE_NOT_REG 0x56
+
+#define OPCODE_OR_REG_IMM 0x57
+#define OPCODE_OR_REG_MEM 0x58
+#define OPCODE_OR_REG_REG 0x59
+
 /* 0xF0 Opcodes: Special instructions */
 #define OPCODE_HALT 0xFE
 #define OPCODE_NOOP 0xFF
