@@ -97,6 +97,14 @@ void tokenize_string(const char* input, Token tokens[], int* token_count);
 #define OPCODE_OR_REG_MEM 0x58
 #define OPCODE_OR_REG_REG 0x59
 
+#define OPCODE_LEFT_SHIFT_REG_IMM 0x5A
+#define OPCODE_LEFT_SHIFT_REG_MEM 0x5B
+#define OPCODE_LEFT_SHIFT_REG_REG 0x5C
+
+#define OPCODE_RIGHT_SHIFT_REG_IMM 0x5D
+#define OPCODE_RIGHT_SHIFT_REG_MEM 0x5E
+#define OPCODE_RIGHT_SHIFT_REG_REG 0x5F
+
 
 /* 0xF0 Opcodes: Special instructions */
 #define OPCODE_HALT 0xFE

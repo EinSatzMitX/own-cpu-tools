@@ -711,16 +711,247 @@ void execute(u8 opcode){
       }
       break;
     }
+    case OPCODE_LEFT_SHIFT_REG_IMM: {
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
 
+      if (reg < 8){
+        u16 value = (val_high << 8) | val_low;
+        u16 result = cpu->r[reg];
+
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_C);
+
+        // vvv ChatGPT cooked this one vvv
+        
+        // Handle large shift values, since shifting more than 15 in a 16-bit register makes no sense
+        value = value % 16;  // Limit shifts to the width of the register
+
+        // Check if any bits will be shifted out of the most significant bit (MSB)
+        if (value > 0 && (result & (1 << (16 - value))) != 0) {
+          set_flag(STATUS_FLAG_C);  // Set Carry Flag if any bit is shifted out of MSB
+        }
+
+        result = result << value; 
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+
+      break;
+    }
+    case OPCODE_LEFT_SHIFT_REG_MEM:{
+      u8 reg = fetch();
+      u8 addr_low = fetch();
+      u8 addr_high = fetch();
+
+      if (reg < 8){
+        u16 addr = (addr_high << 8) | addr_low;
+
+        u16 result = cpu->r[reg];
+        u16 value = cpu->memory[addr];
+
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_C);
+
+        // vvv ChatGPT cooked this one vvv
+        // Check if any bits will be shifted out of the most significant bit (MSB)
+        if (value > 0 && (result & (1 << (16 - value))) != 0) {
+          set_flag(STATUS_FLAG_C);  // Set Carry Flag if any bit is shifted out of MSB
+        }
+
+        result = result << value; 
+          
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+
+
+        cpu->r[reg] = result; 
+      }else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_LEFT_SHIFT_REG_REG:{
+      u8 reg_a = fetch();
+      u8 reg_b = fetch();
+
+      if (reg_a < 8 && reg_b < 8){
+        u16 result = cpu->r[reg_a];
+        u16 value_b = cpu->r[reg_b];
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_C);
+
+        // vvv ChatGPT cooked this one vvv
+        // Check if any bits will be shifted out of the most significant bit (MSB)
+        if (value_b > 0 && (result & (1 << (16 - value_b))) != 0) {
+          set_flag(STATUS_FLAG_C);  // Set Carry Flag if any bit is shifted out of MSB
+        }
+
+        result = result << value_b;
+
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+
+        cpu->r[reg_a] = result;
+      }
+      else{
+        log_output(LOG_LEVEL_ERROR, "Invalid registers: r%d, r%d", reg_a, reg_b);
+      }
+      break;
+    }
+    case OPCODE_RIGHT_SHIFT_REG_IMM: {
+      u8 reg = fetch();
+      u8 val_low = fetch();
+      u8 val_high = fetch();
+
+      if (reg < 8){
+        u16 value = (val_high << 8) | val_low;
+        u16 result = cpu->r[reg];
+
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_C);
+
+        // vvv ChatGPT cooked this one vvv
+        // Check if any bits will be shifted out of the most significant bit (MSB)
+        if (value > 0 && (result & (1 << (16 - value))) != 0) {
+          set_flag(STATUS_FLAG_C);  // Set Carry Flag if any bit is shifted out of MSB
+        }
+
+        result = result >> value; 
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+
+
+        cpu->r[reg] = result;
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+
+      break;
+
+    }
+    case OPCODE_RIGHT_SHIFT_REG_MEM:{
+      u8 reg = fetch();
+      u8 addr_low = fetch();
+      u8 addr_high = fetch();
+
+      if (reg < 8){
+        u16 addr = (addr_high << 8) | addr_low;
+
+        u16 result = cpu->r[reg];
+        u16 value = cpu->memory[addr];
+
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_C);
+
+        // vvv ChatGPT cooked this one vvv
+        // Check if any bits will be shifted out of the most significant bit (MSB)
+        if (value > 0 && (result & (1 << (16 - value))) != 0) {
+          set_flag(STATUS_FLAG_C);  // Set Carry Flag if any bit is shifted out of MSB
+        }
+
+        result = result >> value; 
+          
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+
+
+        cpu->r[reg] = result; 
+      }else {
+        log_output(LOG_LEVEL_ERROR, "Invalid register: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_RIGHT_SHIFT_REG_REG:{
+      u8 reg_a = fetch();
+      u8 reg_b = fetch();
+
+      if (reg_a < 8 && reg_b < 8){
+        u16 result = cpu->r[reg_a];
+        u16 value_b = cpu->r[reg_b];
+
+        clear_flag(STATUS_FLAG_Z);
+        clear_flag(STATUS_FLAG_S);
+        clear_flag(STATUS_FLAG_C);
+
+        // vvv ChatGPT cooked this one vvv
+        // Check if any bits will be shifted out of the most significant bit (MSB)
+        if (value_b > 0 && (result & (1 << (16 - value_b))) != 0) {
+          set_flag(STATUS_FLAG_C);  // Set Carry Flag if any bit is shifted out of MSB
+        }
+
+        result = result >> value_b;
+
+
+        if (result == 0){
+          set_flag(STATUS_FLAG_Z);
+        }
+        if ((i16)result < 0){
+          set_flag(STATUS_FLAG_S);
+        }
+
+
+        cpu->r[reg_a] = result;
+      }
+      else{
+        log_output(LOG_LEVEL_ERROR, "Invalid registers: r%d, r%d", reg_a, reg_b);
+      }
+      break;
+    }
 
 
     case OPCODE_HALT:{
       log_output(LOG_LEVEL_ERROR, "CPU will be halted (Opcode 0xFE)");
       break;
     }
-    default:
+    default:{
       log_output(LOG_LEVEL_ERROR, "Unknown opcode: 0x%02x", opcode);
       break;
+    }
   }
 }
 

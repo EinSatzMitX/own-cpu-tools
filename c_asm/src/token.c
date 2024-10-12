@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #include "defines.h"
 #include "token.h"
@@ -42,6 +43,10 @@ u8 get_opcode(const char *str){
   /* 0x30 Opcodes: Branch instructions*/
   //
 
+
+  else if (strcmp(str, "JMP") == 0) {
+    return OPCODE_BRANCH_ALWAYS;
+  }
   /* 0x40 Opcodes: Arithmetical instructions */
   /* Signed Arithmetic*/
   else if (strcmp(str, "ASI") == 0) {
@@ -95,6 +100,26 @@ u8 get_opcode(const char *str){
     return OPCODE_OR_REG_REG; 
   }
 
+  else if (strcmp(str, "LSI") == 0) {
+    return OPCODE_LEFT_SHIFT_REG_IMM; 
+  }
+  else if (strcmp(str, "LSM") == 0) {
+    return OPCODE_LEFT_SHIFT_REG_MEM; 
+  }
+  else if (strcmp(str, "LSR") == 0) {
+    return OPCODE_LEFT_SHIFT_REG_REG; 
+  }
+
+  else if (strcmp(str, "RSI") == 0) {
+    return OPCODE_RIGHT_SHIFT_REG_IMM; 
+  }
+  else if (strcmp(str, "RSM") == 0) {
+    return OPCODE_RIGHT_SHIFT_REG_MEM; 
+  }
+  else if (strcmp(str, "RSR") == 0) {
+    return OPCODE_RIGHT_SHIFT_REG_REG; 
+  }
+
 
   // Add more opcodes as needed
   //
@@ -122,7 +147,7 @@ u8 get_register(const char *str){
 }
 
 u16 get_immediate(const char* str) {
-    return (u16)atoi(str + 1);  // Convert the substring after '#' to an integer
+    return (u16)atoi(str);  // Convert the substring to an integer
 }
 
 int is_register(const char* str) {
@@ -134,32 +159,46 @@ int is_immediate(const char* str) {
     return (str[0] == '#' && isdigit(str[1]));  // Format: "#5", "#123", etc.
 }
 
+int is_label(const char* str){
+  return (str[strlen(str) - 1] == ':' ? 1 : 0);
+}
 
 // Function to tokenize the string and store it in the token array
 void tokenize_string(const char* input, Token tokens[], int* token_count) {
-    char buffer[100];  // Local copy of the input
+    char buffer[FILE_SIZE];  // Local copy of the input
     strcpy(buffer, input);
+    printf("Successfully copied input to buffer\n");
     
     // Split the input string by whitespace
     char* token = strtok(buffer, " ");
     *token_count = 0;
+    printf("Successfully converted buffer to token\n");
 
-    // Process each token
-    while (token != NULL) {
-        if (is_register(token)) {
-            // Register token
-            tokens[*token_count].type = TOKEN_REGISTER;
-            tokens[*token_count].reg = get_register(token);  // Convert register string to numeric value
-        } else if (is_immediate(token)) {
-            // Immediate value token
-            tokens[*token_count].type = TOKEN_IMMEDIATE;
-            tokens[*token_count].val.value = get_immediate(token);  // Convert immediate string to numeric value
-        } else {
-            // Opcode token
-            tokens[*token_count].type = TOKEN_OPCODE;
-            tokens[*token_count].opcode = get_opcode(token);  // Convert opcode string to numeric value
-        }
-        (*token_count)++;
-        token = strtok(NULL, " ");
+  // Process each token
+  while (token != NULL) {
+    if (*token_count >= MAX_TOKENS){
+      perror("Maximum token count exceeded");
+      return;
+    }
+
+
+    if (is_register(token)) {
+      // Register token
+      tokens[*token_count].type = TOKEN_REGISTER;
+      tokens[*token_count].reg = get_register(token);  // Convert register string to numeric value
+    } else if (isdigit(token[0])) {
+      // Immediate value token
+      tokens[*token_count].type = TOKEN_IMMEDIATE;
+      tokens[*token_count].val.value = get_immediate(token);  // Convert immediate string to numeric value
+    }
+    else if (is_label(token)){
+             
+    } else {
+      // Opcode token
+      tokens[*token_count].type = TOKEN_OPCODE;
+      tokens[*token_count].opcode = get_opcode(token);  // Convert opcode string to numeric value
+    }
+    (*token_count)++;
+    token = strtok(NULL, " ");
     }
 }

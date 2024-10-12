@@ -1,9 +1,17 @@
+_start:
+  LDI R1, #7
+  SWR R1, #101
 
-LDI R1, #7
-SWR R1, #100
-LDM R0, #100
 
-NOT R0
+  LDI R0, #5
+  
 
-HLT
+  LDI R2, #7
+  LDI R3, #9
+
+  JMP _start
+
+  LDI R0, #15
+_end:
+
 
