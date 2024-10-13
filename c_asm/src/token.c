@@ -42,10 +42,38 @@ u8 get_opcode(const char *str){
   }
   /* 0x30 Opcodes: Branch instructions*/
   //
-
-
+  else if (strcmp(str, "BEQ") == 0) {
+    return OPCODE_BRANCH_EQUAL;
+  }
+  else if (strcmp(str, "BNQ") == 0) {
+    return OPCODE_BRANCH_NOT_EQUAL;
+  }
+  else if (strcmp(str, "BLT") == 0) {
+    return OPCODE_BRANCH_LESS_THAN;
+  }
+  else if (strcmp(str, "BGT") == 0) {
+    return OPCODE_BRANCH_GREATER_THEN;
+  }
+  else if (strcmp(str, "BLQ") == 0) {
+    return OPCODE_BRANCH_LESS_OR_EQUAL;
+  }
+  else if (strcmp(str, "BGQ") == 0) {
+    return OPCODE_BRANCH_GREATER_OR_EQUAL;
+  }
+  else if (strcmp(str, "BOC") == 0) {
+    return OPCODE_BRANCH_OVERFLOW_CLEAR;
+  }
+  else if (strcmp(str, "BOS") == 0) {
+    return OPCODE_BRANCH_OVERFLOW_SET;
+  }
   else if (strcmp(str, "JMP") == 0) {
     return OPCODE_BRANCH_ALWAYS;
+  }
+  else if (strcmp(str, "JSR") == 0){
+    return OPCODE_JSR;
+  }
+  else if (strcmp(str, "RET") == 0){
+    return OPCODE_RET;
   }
   /* 0x40 Opcodes: Arithmetical instructions */
   /* Signed Arithmetic*/
@@ -129,7 +157,15 @@ u8 get_opcode(const char *str){
   else if (strcmp(str, "NOP") == 0){
     return OPCODE_NOOP;
   }
-    
+
+  /* 0x60 Opcodes: Stack instructions 0x60 Opcodes: Stack instructions */
+  else if (strcmp(str, "PSH") == 0){
+    return OPCODE_PUSH_REG;
+  }  
+  else if (strcmp(str, "POP") == 0){
+    return OPCODE_POP_REG;
+  }  
+
   printf("Unknown Opcode: %s.  ", str);
   printf("Value 0xFF is being added to the string.\n");
   return 0xFF; // NOOP

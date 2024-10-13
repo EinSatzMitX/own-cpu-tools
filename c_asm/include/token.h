@@ -66,6 +66,11 @@ void tokenize_string(const char* input, Token tokens[], int* token_count);
 #define OPCODE_BRANCH_OVERFLOW_SET 0x37 // Branches if the most recent equation resulted in the Overflow flag being set
 #define OPCODE_BRANCH_ALWAYS 0x38 // Simply branches
 
+/* Subroutines */
+#define OPCODE_JSR  0x39
+#define OPCODE_RET  0x3A
+
+
 /* 0x40 Opcodes: Arithmetical instructions */
 #define OPCODE_ADD_SIGNED_REG_IMM 0x40 // Adds a signed immediate value to a specified register
 #define OPCODE_SUB_SIGNED_REG_IMM 0x41 // Subtracts a signed immediate value from a specified register 
@@ -104,6 +109,11 @@ void tokenize_string(const char* input, Token tokens[], int* token_count);
 #define OPCODE_RIGHT_SHIFT_REG_IMM 0x5D
 #define OPCODE_RIGHT_SHIFT_REG_MEM 0x5E
 #define OPCODE_RIGHT_SHIFT_REG_REG 0x5F
+
+
+/* 0x60 Opcodes: Stack instructions */
+#define OPCODE_PUSH_REG 0x60
+#define OPCODE_POP_REG  0x61
 
 
 /* 0xF0 Opcodes: Special instructions */

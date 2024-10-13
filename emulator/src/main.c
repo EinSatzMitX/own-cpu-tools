@@ -30,6 +30,8 @@ int main(int argc, char** argv){
 
   set_pc(hex_start_addr);
 
+  printf("Status flags: 0b%08b", cpu->status_flags);
+
   run();
 
   return 0;

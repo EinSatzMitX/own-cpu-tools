@@ -68,6 +68,12 @@ u8 fetch(){
   return opcode;
 }
 
+u16 fetch_word(){
+  u8 val_low = fetch();
+  u8 val_high = fetch();
+  return (val_high << 8) | val_low;
+}
+
 void execute(u8 opcode){
   u64 cycles = 0;
 
@@ -279,7 +285,72 @@ void execute(u8 opcode){
      *  Leave some space for the branch instructions that will be added later on
      *
     */
-  case OPCODE_BRANCH_ALWAYS: {
+    case OPCODE_BRANCH_EQUAL: {
+      u16 addr = fetch_word();
+      if (is_flag_set(STATUS_FLAG_Z)) {
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_NOT_EQUAL:{
+      u16 addr = fetch_word();
+      if (!is_flag_set(STATUS_FLAG_Z)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_LESS_THAN:{
+      u16 addr = fetch_word();
+      if (is_flag_set(STATUS_FLAG_L)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_GREATER_THEN:{
+      u16 addr = fetch_word();
+      if (!is_flag_set(STATUS_FLAG_Z) && !is_flag_set(STATUS_FLAG_L)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_LESS_OR_EQUAL:{
+      u16 addr = fetch_word();
+      if (is_flag_set(STATUS_FLAG_Z) || is_flag_set(STATUS_FLAG_L)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_GREATER_OR_EQUAL:{
+      u16 addr = fetch_word();
+      if (!is_flag_set(STATUS_FLAG_L)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_OVERFLOW_CLEAR:{
+      u16 addr = fetch_word();
+
+      if (!is_flag_set(STATUS_FLAG_V)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "BOC: Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_OVERFLOW_SET:{
+      u16 addr = fetch_word();
+      if (is_flag_set(STATUS_FLAG_V)){
+        cpu->pc = addr;
+        log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+      }
+      break;
+    }
+    case OPCODE_BRANCH_ALWAYS: {
       u8 addr_low = fetch();
       u8 addr_high = fetch();
 
@@ -291,8 +362,18 @@ void execute(u8 opcode){
 
       break;
     }
-
-
+    case OPCODE_JSR:{
+      u16 addr = fetch_word();
+      push16(cpu->pc + 2);
+      cpu->pc = addr;
+      log_output(LOG_LEVEL_INFO, "JSR: Jumping to: 0x%04x", addr);
+      break;
+    }
+    case OPCODE_RET:{
+      cpu->pc = pop16();
+      log_output(LOG_LEVEL_INFO, "RET: Returning to: 0x%04x", cpu->pc);
+      break;
+    }
   case OPCODE_ADD_SIGNED_REG_IMM: {
     u8 reg = fetch();
     u8 val_low = fetch();
@@ -956,6 +1037,28 @@ void execute(u8 opcode){
       }
       break;
     }
+    case OPCODE_PUSH_REG:{
+      u8 reg = fetch();
+
+      if (reg < 8){
+        push16(cpu->r[reg]);
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "POP: Register doesnt exist: r%d", reg);
+      }
+      break;
+    }
+    case OPCODE_POP_REG:{
+      u8 reg = fetch();
+      if(reg < 8){
+        cpu->r[reg] = pop16();
+      }
+      else {
+        log_output(LOG_LEVEL_ERROR, "POP: Register doesnt exist: r%d", reg);
+      }
+
+      break;
+    }
 
 
     case OPCODE_HALT:{
@@ -970,17 +1073,22 @@ void execute(u8 opcode){
 }
 
 void run(){
-  while (cpu->memory[cpu->pc] != OPCODE_HALT/* peek into memory without increasing the program counter */){
+  while (cpu->memory[cpu->pc] != OPCODE_HALT /* peek into memory without increasing the program counter */){
     log_output(LOG_LEVEL_INFO, "Fetching instruction...");
     u8 opcode = fetch();
     log_output(LOG_LEVEL_INFO, "Now executing opcode: 0x%02x", opcode);
     execute(opcode);
     log_output(LOG_LEVEL_INFO, "Current Program counter: 0x%04x", cpu->pc);
+    log_output(LOG_LEVEL_INFO, "Current Stack Pointer: 0x%02x", cpu->sp);
 
   }
   if (cpu->memory[cpu->pc] == OPCODE_HALT){
     log_output(LOG_LEVEL_INFO, "Halting CPU...");
   }
+}
+
+int is_flag_set(u8 flag){
+  return (cpu->status_flags & flag) != 0;
 }
 
 void set_flag(u8 flag){
@@ -993,6 +1101,48 @@ void clear_flag(u8 flag){
 void set_pc(u16 val){
   cpu->pc = val;
 }
+
+void set_sp(u8 val){
+  cpu->sp = val;
+}
+
+void push(u8 val) {
+    if (cpu->sp == 0x00) {
+        log_output(LOG_LEVEL_ERROR, "Stack Overflow!");
+    }
+    cpu->memory[cpu->sp--] = val;
+}
+
+u8 pop() {
+    if (cpu->sp == 0xFF) {
+        log_output(LOG_LEVEL_ERROR, "Stack Underflow!");
+        return 0;
+    }
+    return cpu->memory[++cpu->sp];
+}
+
+
+void push16(u16 val) {
+    if (cpu->sp <= 1){
+      log_output(LOG_LEVEL_ERROR, "Stack Underflow!");
+    }
+
+    // Push high byte, then low byte, decrementing stack pointer after each
+    cpu->memory[cpu->sp-- + STACK_BASE] = (val >> 8) & 0xFF;  
+    cpu->memory[cpu->sp-- + STACK_BASE] = val & 0xFF;         
+}
+
+u16 pop16() {
+    if (cpu->sp >= 0xFF - 1){
+      log_output(LOG_LEVEL_ERROR, "Stack Overflow!");
+    }
+
+    // Pop low byte first, incrementing stack pointer before accessing memory
+    u16 low = cpu->memory[++cpu->sp + STACK_BASE];  
+    u16 high = cpu->memory[++cpu->sp + STACK_BASE]; 
+    return (high << 8) | low;  // Combine high and low bytes
+}
+
 
 void load_program(u8* program, size_t program_size, u16 start_addr){
   if (program_size > 64*1024){

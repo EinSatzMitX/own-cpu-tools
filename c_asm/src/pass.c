@@ -52,16 +52,116 @@ void second_pass(char *assemblyCode, char *outputCode) {
     
     while (token != NULL) {
         if (strcmp(token, "JMP") == 0) {
-            // Next token will be the label name
-            token = strtok(NULL, " \n\t\r,");
-            int address = get_label_address(token);
-            if (address != -1) {
-                // Convert label to the actual address
-                sprintf(outputCode + strlen(outputCode), "JMP %d ", address);
-            } else {
-                printf("Error: Undefined label %s\n", token);
-            }
-        } else if (token[0] == '#') {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "JMP %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BEQ") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BEQ %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BNQ") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BNQ %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BLT") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BLT %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BGT") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BGT %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BLQ") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BLQ %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BGQ") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BGQ %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BOC") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BOC %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "BOS") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "BOS %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (strcmp(token, "JSR") == 0) {
+          // Next token will be the label name
+          token = strtok(NULL, " \n\t\r,");
+          int address = get_label_address(token);
+          if (address != -1) {
+            // Convert label to the actual address
+            sprintf(outputCode + strlen(outputCode), "JSR %d ", address);
+          } else {
+            printf("Error: Undefined label %s\n", token);
+          }
+        } 
+        else if (token[0] == '#') {
             // Handle immediate values (numbers) indicated by '#'
             int number = atoi(token + 1); // Convert the number string to integer (skip '#')
             sprintf(outputCode + strlen(outputCode), "%d ", number);  // Write as hex

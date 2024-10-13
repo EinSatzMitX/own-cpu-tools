@@ -1,17 +1,15 @@
 _start:
-  LDI R1, #7
-  SWR R1, #101
+  LDI R0, #6
+
+  PSH R0
+  POP R1
+
+  JSR _sub
+
+  HLT
 
 
-  LDI R0, #5
+_sub:
   
-
-  LDI R2, #7
   LDI R3, #9
-
-  JMP _start
-
-  LDI R0, #15
-_end:
-
-
+  RET

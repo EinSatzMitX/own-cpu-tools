@@ -20,7 +20,7 @@ typedef struct{
   u16 pc;
 
   //Stack Pointer
-  u16 sp;
+  u8 sp;
 
   // Status Flags
   // LAYOUT: 0b0 0 0 0  0 0 0 0
@@ -55,13 +55,24 @@ u16 get_pc();
 u16 get_sp();
 
 u8 fetch();
+u16 fetch_word();
+
 void execute(u8 opcode);
 void run();
 
+int is_flag_set(u8 flag);
 void set_flag(u8 flag);
 void clear_flag(u8 flag);
 
 void set_pc(u16 val);
+void set_sp(u8 val);
+
+void push(u8 val);
+u8 pop();
+
+void push16(u16 val);
+u16 pop16();
+
 
 void load_program(u8* program, size_t program_size, u16 start_addr);
 void load_program_from_file(const char* filename, u16 start_addr);
