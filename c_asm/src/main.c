@@ -10,8 +10,8 @@
 
 int main(int argc, char** argv){
 
-  if (argc < 4){
-    printf("Please follow this syntax: ./c_asm <input.asm> -o <output.bin>\n");
+  if (argc < 5){
+    printf("Please follow this syntax: ./c_asm <input.asm> -o <output.bin> <start-address (as hex)>\n");
     return -1;
   }
 
@@ -19,6 +19,15 @@ int main(int argc, char** argv){
   char* contents = (char*)malloc(FILE_SIZE);
   printf("Starting to read file...\n");
   contents = read_file(argv[1]);
+
+  char *endptr;
+  unsigned long value = strtol(argv[4], &endptr, 16);
+  if (*endptr != '\0'){
+    printf("Invalid hex value: %s\n", argv[4]);
+    return 1;
+  }
+
+  u16 start_addr = (u16) value;
 
   // char contents[] = "_start:\nLDI R1, #7\nJMP _end\n_end:\nJMP _start";
 
@@ -29,7 +38,7 @@ int main(int argc, char** argv){
   strcpy(assemblyCodeCopy1, contents);
   strcpy(assemblyCodeCopy2, contents);
 
-  first_pass(assemblyCodeCopy1);
+  first_pass(assemblyCodeCopy1, start_addr);
 
   second_pass(assemblyCodeCopy2, output_code);
 
@@ -45,7 +54,7 @@ int main(int argc, char** argv){
   }
 
   printf("Now writing tokens to file\n");
-  write_tokens_to_file(argv[argc - 1], tokens, token_count);
+  write_tokens_to_file(argv[3], tokens, token_count);
 
   return 0;
 }

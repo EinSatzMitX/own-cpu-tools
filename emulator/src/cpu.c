@@ -279,6 +279,20 @@ void execute(u8 opcode){
      *  Leave some space for the branch instructions that will be added later on
      *
     */
+  case OPCODE_BRANCH_ALWAYS: {
+      u8 addr_low = fetch();
+      u8 addr_high = fetch();
+
+      u16 addr = (addr_high << 8) | addr_low;
+
+      cpu->pc = addr;
+
+      log_output(LOG_LEVEL_INFO, "Jumping to: 0x%04x", addr);
+
+      break;
+    }
+
+
   case OPCODE_ADD_SIGNED_REG_IMM: {
     u8 reg = fetch();
     u8 val_low = fetch();
@@ -976,18 +990,25 @@ void clear_flag(u8 flag){
   cpu->status_flags &= ~flag;
 }
 
+void set_pc(u16 val){
+  cpu->pc = val;
+}
+
 void load_program(u8* program, size_t program_size, u16 start_addr){
   if (program_size > 64*1024){
     log_output(LOG_LEVEL_ERROR, "Bro stop uploading your porn collection");
     return;
   }
 
-  for (size_t i = start_addr; i < program_size; i++){
-    cpu->memory[i] = program[i];
+  log_output(LOG_LEVEL_INFO, "Loading program into memory at 0x%04x", start_addr);
+
+  // Correct loop to use separate indices for memory and program
+  for (size_t i = 0; i < program_size; i++){
+    cpu->memory[start_addr + i] = program[i];
+    log_output(LOG_LEVEL_INFO, "Mem[i]: 0x%04x | Value: 0x%02x", start_addr + i, cpu->memory[start_addr + i]);
   }
 
-  log_output(LOG_LEVEL_INFO, "Program loaded into memory succesfully!");
-
+  log_output(LOG_LEVEL_INFO, "Program loaded into memory successfully!");
 }
 
 void load_program_from_file(const char* filename, u16 start_addr){

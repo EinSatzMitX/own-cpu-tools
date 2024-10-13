@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-g",
+      "-O2",
+      "-c",
+      "-o",
+      "obj/cpu.o",
+      "src/cpu.c"
+    ],
+    "directory": "/home/bobo/Coding/rust/own-cpu/own-cpu-tools/emulator",
+    "file": "/home/bobo/Coding/rust/own-cpu/own-cpu-tools/emulator/src/cpu.c",
+    "output": "/home/bobo/Coding/rust/own-cpu/own-cpu-tools/emulator/obj/cpu.o"
+  }
+]

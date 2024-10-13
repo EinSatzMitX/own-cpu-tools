@@ -17,16 +17,13 @@ int get_label_address(const char *label){
   return -1;
 }
 
-void first_pass(char *assembly_code){
-  int address = 0;
+
+void first_pass(char *assembly_code, int addr){
+  int address = addr;
   char* token = strtok(assembly_code, " \n\r\t,");
 
 
   while (token != NULL) {
-
-    #ifdef DEBUG
-    printf("first_pass() current tokens: %s \n", token);
-    #endif
 
     // Check wether the token is a label or not
     if(token[strlen(token) - 1] == ':'){
@@ -40,7 +37,6 @@ void first_pass(char *assembly_code){
     }else if (token[0] == '#') {
       // Now it is a value, which means it is 16-bit, so increment the address twice
       address += 2;
-      printf("Number value registered; address will be incremented by 2\n");
     }
     else{
       // Otherwise its an instruction, so increment the address
@@ -61,7 +57,7 @@ void second_pass(char *assemblyCode, char *outputCode) {
             int address = get_label_address(token);
             if (address != -1) {
                 // Convert label to the actual address
-                sprintf(outputCode + strlen(outputCode), "JMP %d\n", address);
+                sprintf(outputCode + strlen(outputCode), "JMP %d ", address);
             } else {
                 printf("Error: Undefined label %s\n", token);
             }

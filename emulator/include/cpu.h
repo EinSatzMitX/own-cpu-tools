@@ -61,5 +61,7 @@ void run();
 void set_flag(u8 flag);
 void clear_flag(u8 flag);
 
+void set_pc(u16 val);
+
 void load_program(u8* program, size_t program_size, u16 start_addr);
 void load_program_from_file(const char* filename, u16 start_addr);

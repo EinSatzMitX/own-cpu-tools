@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-g",
+      "-O2",
+      "-c",
+      "-o",
+      "obj/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/bobo/Coding/rust/own-cpu/own-cpu-tools/c_asm",
+    "file": "/home/bobo/Coding/rust/own-cpu/own-cpu-tools/c_asm/src/main.c",
+    "output": "/home/bobo/Coding/rust/own-cpu/own-cpu-tools/c_asm/obj/main.o"
+  }
+]

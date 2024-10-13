@@ -9,5 +9,4 @@
 void init(){
   CPU* cpu = get_CPU();
   cpu->pc = 0x0000;
-  cpu->memory[0x10] = OPCODE_HALT;
 }
