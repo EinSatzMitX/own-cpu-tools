@@ -9,5 +9,5 @@
 void init(){
   CPU* cpu = get_CPU();
   cpu->pc = 0x0000;
-  cpu->sp = 0xFF;
+  cpu->sp = 0;
 }

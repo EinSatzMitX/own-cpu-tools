@@ -1,8 +1,8 @@
 #pragma once
 
 /* Stack Section */
-#define STACK_BOTTOM 0xFF
-#define STACK_TOP 0x00
+#define STACK_TOP 0xFF
+#define STACK_BOTTOM 0x00
 #define STACK_BASE 0xFF00
 
 

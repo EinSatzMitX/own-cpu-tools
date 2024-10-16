@@ -364,13 +364,20 @@ void execute(u8 opcode){
     }
     case OPCODE_JSR:{
       u16 addr = fetch_word();
-      push16(cpu->pc + 2);
+      u16 ret_addr = cpu->pc;
+
+      push((ret_addr >> 8) & 0xFF);
+      push(ret_addr & 0xFF);
+  
       cpu->pc = addr;
-      log_output(LOG_LEVEL_INFO, "JSR: Jumping to: 0x%04x", addr);
+
+      log_output(LOG_LEVEL_INFO, "JSR: Jumping to: 0x%04x", cpu->pc);
       break;
     }
     case OPCODE_RET:{
-      cpu->pc = pop16();
+      u8 val_low = pop();
+      u8 val_high = pop();
+      cpu->pc = (val_high << 8) | val_low;
       log_output(LOG_LEVEL_INFO, "RET: Returning to: 0x%04x", cpu->pc);
       break;
     }
@@ -1106,41 +1113,34 @@ void set_sp(u8 val){
   cpu->sp = val;
 }
 
-void push(u8 val) {
-    if (cpu->sp == 0x00) {
-        log_output(LOG_LEVEL_ERROR, "Stack Overflow!");
-    }
-    cpu->memory[cpu->sp--] = val;
+void push(u8 val){
+  cpu->sp++;
+  cpu->memory[STACK_BASE + cpu->sp] = val;
 }
 
-u8 pop() {
-    if (cpu->sp == 0xFF) {
-        log_output(LOG_LEVEL_ERROR, "Stack Underflow!");
-        return 0;
-    }
-    return cpu->memory[++cpu->sp];
+u8 pop(){
+  u8 val = cpu->memory[STACK_BASE + cpu->sp];
+  cpu->sp--;
+  return val;
 }
 
 
 void push16(u16 val) {
-    if (cpu->sp <= 1){
-      log_output(LOG_LEVEL_ERROR, "Stack Underflow!");
-    }
-
-    // Push high byte, then low byte, decrementing stack pointer after each
-    cpu->memory[cpu->sp-- + STACK_BASE] = (val >> 8) & 0xFF;  
-    cpu->memory[cpu->sp-- + STACK_BASE] = val & 0xFF;         
+  cpu->memory[STACK_BASE + cpu->sp] = val & 0xFF;
+  cpu->sp++;
+  cpu->memory[STACK_BASE + cpu->sp] = (val >> 8) & 0xFF;
+  cpu->sp++;
 }
 
 u16 pop16() {
-    if (cpu->sp >= 0xFF - 1){
-      log_output(LOG_LEVEL_ERROR, "Stack Overflow!");
-    }
 
-    // Pop low byte first, incrementing stack pointer before accessing memory
-    u16 low = cpu->memory[++cpu->sp + STACK_BASE];  
-    u16 high = cpu->memory[++cpu->sp + STACK_BASE]; 
-    return (high << 8) | low;  // Combine high and low bytes
+  u16 val;
+  cpu->sp--;
+  val = (cpu->memory[STACK_BASE + cpu->sp] << 8); 
+  cpu->sp--;
+  val |= (cpu->memory[STACK_BASE + cpu->sp]);
+
+  return val;
 }
 
 
